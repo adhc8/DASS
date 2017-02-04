@@ -3,6 +3,18 @@ from pymavlink import mavutil # Needed for command message definitions
 import time
 import math
 
+with open("Coordinate.txt") as f:
+        content = f.readlines()
+content = [x.strip('\n') for x in content]
+print(content)
+fl_content=[]
+
+for item in content:
+    fl_content.append(float(item))
+
+print(fl_content)
+
+f.close()
 
 #Set up option parsing to get connection string
 import argparse
@@ -62,10 +74,11 @@ def arm_and_takeoff(aTargetAltitude):
 #Arm and take of to altitude of 5 meters
 arm_and_takeoff(5)
 
-sleep.time(5)
+
+time.sleep(5)
 
 vehicle.mode = VehicleMode("LAND")
 print "Close Vehicle Object"
 vehicle.close()
 
-sitl.stop
+sitl.stop()
