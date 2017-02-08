@@ -14,7 +14,7 @@ from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelativ
 from pymavlink import mavutil # Needed for command message definitions
 import time
 import math
-
+import random
 
 #Set up option parsing to get connection string
 import argparse
@@ -432,80 +432,7 @@ the distance-to-target.
 
 
 
-"""
-Fly a triangular path using the SET_POSITION_TARGET_GLOBAL_INT command and specifying
-a target position (rather than controlling movement using velocity vectors). The command is
-called from goto_position_target_global_int() (via `goto`).
 
-The goto_position_target_global_int method is called indirectly from a custom "goto" that allows
-the target position to be specified as a distance in metres (North/East) from the current position,
-and which reports the distance-to-target.
-
-The code also sets the speed (MAV_CMD_DO_CHANGE_SPEED). In AC3.2.1 Copter will accelerate to this speed
-near the centre of its journey and then decelerate as it reaches the target.
-In AC3.3 the speed changes immediately.
-"""
-print("TRIANGLE path using standard SET_POSITION_TARGET_GLOBAL_INT message and with varying speed.")
-print("Position South 100 West 130")
-
-print("Set groundspeed to 5m/s.")
-vehicle.groundspeed = 5
-goto(-100, -130, goto_position_target_global_int)
-
-print("Set groundspeed to 15m/s (max).")
-vehicle.groundspeed = 15
-print("Position South 0 East 200")
-goto(0, 260, goto_position_target_global_int)
-
-print("Set airspeed to 10m/s (max).")
-vehicle.airspeed = 10
-
-print("Position North 100 West 130")
-goto(100, -130, goto_position_target_global_int)
-
-
-
-"""
-Fly the vehicle in a 50m square path, using the SET_POSITION_TARGET_LOCAL_NED command
-and specifying a target position (rather than controlling movement using velocity vectors).
-The command is called from goto_position_target_local_ned() (via `goto`).
-
-The position is specified in terms of the NED (North East Down) relative to the Home location.
-
-WARNING: The "D" in NED means "Down". Using a positive D value will drive the vehicle into the ground!
-
-The code sleeps for a time (DURATION) to give the vehicle time to reach each position (rather than
-sending commands based on proximity).
-
-The code also sets the region of interest (MAV_CMD_DO_SET_ROI) via the `set_roi()` method. This points the
-camera gimbal at the the selected location (in this case it aligns the whole vehicle to point at the ROI).
-"""
-
-print("SQUARE path using SET_POSITION_TARGET_LOCAL_NED and position parameters")
-DURATION = 20 #Set duration for each segment.
-
-print("North 50m, East 0m, 10m altitude for %s seconds" % DURATION)
-goto_position_target_local_ned(50,0,-10)
-print("Point ROI at current location (home position)")
-# NOTE that this has to be called after the goto command as first "move" command of a particular type
-# "resets" ROI/YAW commands
-set_roi(vehicle.location.global_relative_frame)
-time.sleep(DURATION)
-
-print("North 50m, East 50m, 10m altitude")
-goto_position_target_local_ned(50,50,-10)
-time.sleep(DURATION)
-
-print("Point ROI at current location")
-set_roi(vehicle.location.global_relative_frame)
-
-print("North 0m, East 50m, 10m altitude")
-goto_position_target_local_ned(0,50,-10)
-time.sleep(DURATION)
-
-print("North 0m, East 0m, 10m altitude")
-goto_position_target_local_ned(0,0,-10)
-time.sleep(DURATION)
 
 
 
@@ -527,52 +454,7 @@ NORTH = 2
 SOUTH = -2
 
 # Note for vy:
-# vy > 0 => fly East
-# vy < 0 => fly West
-EAST = 2
-WEST = -2
-
-# Note for vz:
-# vz < 0 => ascend
-# vz > 0 => descend
-UP = -0.5
-DOWN = 0.5
-
-
-# Square path using velocity
-print("SQUARE path using SET_POSITION_TARGET_LOCAL_NED and velocity parameters")
-
-print("Yaw 180 absolute (South)")
-condition_yaw(180)
-
-print("Velocity South & up")
-send_ned_velocity(SOUTH,0,UP,DURATION)
-send_ned_velocity(0,0,0,1)
-
-
-print("Yaw 270 absolute (West)")
-condition_yaw(270)
-
-print("Velocity West & down")
-send_ned_velocity(0,WEST,DOWN,DURATION)
-send_ned_velocity(0,0,0,1)
-
-
-print("Yaw 0 absolute (North)")
-condition_yaw(0)
-
-print("Velocity North")
-send_ned_velocity(NORTH,0,0,DURATION)
-send_ned_velocity(0,0,0,1)
-
-
-print("Yaw 90 absolute (East)")
-condition_yaw(90)
-
-print("Velocity East")
-send_ned_velocity(0,EAST,0,DURATION)
-send_ned_velocity(0,0,0,1)
-
+# vy >
 
 """
 Fly the vehicle in a DIAMOND path using velocity vectors (the underlying code calls the
@@ -589,45 +471,18 @@ At the end of the second segment the code sets a new home location to the curren
 print("DIAMOND path using SET_POSITION_TARGET_GLOBAL_INT and velocity parameters")
 # vx, vy are parallel to North and East (independent of the vehicle orientation)
 
-print("Yaw 225 absolute")
-condition_yaw(225)
+hold_lon=vehicle.location.global_relative_frame.lon
+hold_lat=vehicle.location.global_relative_frame.lat
 
-print("Velocity South, West and Up")
-send_global_velocity(SOUTH,WEST,UP,DURATION)
-send_global_velocity(0,0,0,1)
-
-
-print("Yaw 90 relative (to previous yaw heading)")
-condition_yaw(90,relative=True)
-
-print("Velocity North, West and Down")
-send_global_velocity(NORTH,WEST,DOWN,DURATION)
-send_global_velocity(0,0,0,1)
-
-print("Set new home location to current location")
-vehicle.home_location=vehicle.location.global_frame
-print "Get new home location"
-#This reloads the home location in DroneKit and GCSs
-cmds = vehicle.commands
-cmds.download()
-cmds.wait_ready()
-print " Home Location: %s" % vehicle.home_location
+for x in range (0,5):
+    y_coord=round(random.uniform(5,5.5),2)
+    print("goto: %f" % y_coord )
+    goto(hold_lat,hold_lon,y_coord)
 
 
-print("Yaw 90 relative (to previous yaw heading)")
-condition_yaw(90,relative=True)
-
-print("Velocity North and East")
-send_global_velocity(NORTH,EAST,0,DURATION)
-send_global_velocity(0,0,0,1)
 
 
-print("Yaw 90 relative (to previous yaw heading)")
-condition_yaw(90,relative=True)
 
-print("Velocity South and East")
-send_global_velocity(SOUTH,EAST,0,DURATION)
-send_global_velocity(0,0,0,1)
 
 
 """

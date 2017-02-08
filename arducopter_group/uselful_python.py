@@ -1,6 +1,3 @@
-# f = open("Dont_read_this.txt")
-#
-# print(f.read())
-# print(help(open.read()))
-import dronekit
-print(help(dronekit))
+from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
+
+print(help(LocationGlobal))

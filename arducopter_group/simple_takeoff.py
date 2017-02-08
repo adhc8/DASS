@@ -1,20 +1,11 @@
+
+
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 from pymavlink import mavutil # Needed for command message definitions
 import time
 import math
-
-with open("Coordinate.txt") as f:
-        content = f.readlines()
-content = [x.strip('\n') for x in content]
-print(content)
-fl_content=[]
-
-for item in content:
-    fl_content.append(float(item))
-
-print(fl_content)
-
-f.close()
+import paramiko
+import random
 
 #Set up option parsing to get connection string
 import argparse
@@ -75,10 +66,57 @@ def arm_and_takeoff(aTargetAltitude):
 arm_and_takeoff(5)
 
 
-time.sleep(5)
+def goto_position_target_global_int(aLocation):
+    """
+    Send SET_POSITION_TARGET_GLOBAL_INT command to request the vehicle fly to a specified LocationGlobal.
+
+    For more information see: https://pixhawk.ethz.ch/mavlink/#SET_POSITION_TARGET_GLOBAL_INT
+
+    See the above link for information on the type_mask (0=enable, 1=ignore).
+    At time of writing, acceleration and yaw bits are ignored.
+    """
+    msg = vehicle.message_factory.set_position_target_global_int_encode(
+        0,       # time_boot_ms (not used)
+        0, 0,    # target system, target component
+        mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, # frame
+        0b0000111111111000, # type_mask (only speeds enabled)
+        aLocation.lat*1e7, # lat_int - X Position in WGS84 frame in 1e7 * meters
+        aLocation.lon*1e7, # lon_int - Y Position in WGS84 frame in 1e7 * meters
+        aLocation.alt, # alt - Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
+        0, # X velocity in NED frame in m/s
+        0, # Y velocity in NED frame in m/s
+        0, # Z velocity in NED frame in m/s
+        0, 0, 0, # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
+        0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink)
+    # send command to vehicle
+    vehicle.send_mavlink(msg)
+
+
+
+#
+# print(type(y_coord))
+# str_coord=str(y_coord)
+# print(type(str_coord))
+# print(str_coord)
+#
+# with open(fName, "r+") as f:
+#     f.write(str_coord)
+#     str_coordIN=f.readline(1)
+#
+#     print(str_coordIN)
+#     new_alt_float=float(str_coordIN)
+
+# vehicle.goto_position_target_global_int(0,0,y_coord)
+# time.sleep(1)
+#print "Global location (relative altitude): " %s vehicle.location.global_relative_frame
+print(vehicle.location.global_relative_frame)
+print(vehicle.location.global_relative_frame.lon)
+
 
 vehicle.mode = VehicleMode("LAND")
 print "Close Vehicle Object"
 vehicle.close()
 
+# f.close()
 sitl.stop()
+# ssh.close()
