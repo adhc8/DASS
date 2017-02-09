@@ -1,4 +1,4 @@
-from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
+from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative, CommandSequence
 from pymavlink import mavutil # Needed for command message definitions
 import time
 import math
@@ -28,6 +28,7 @@ vehicle = connect(connection_string, wait_ready=True)
 altitude = open("new_altitude.txt", "r")
 alt = altitude.read()
 int_alt = int(alt)
+
 
 def arm_and_takeoff(aTargetAltitude):
     """
@@ -76,7 +77,7 @@ def condition_yaw(heading, relative=False):
         mavutil.mavlink.MAV_CMD_CONDITION_YAW, #command
         0,        #confirmation
         heading,      #param 1, yaw in degrees
-        0,       #param 2, yaw speed deg/s
+        10,       #param 2, yaw speed deg/s
         1,        #param 3, direction -1 ccw, 1 cw
         is_relative,        #param 4, relative offset 1, absolute angle 0
         0, 0, 0)    #param 5-7 not used
@@ -86,24 +87,42 @@ def condition_yaw(heading, relative=False):
 
 time.sleep(1)
 
-vehicle.mode = VehicleMode("GUIDED")
+'''
+print("Set new home location to current location")
+vehicle.home_location=vehicle.location.global_frame
+print "Get new home location"
+#This reloads the home location in DroneKit and GCSs
+cmds = vehicle.commands
+cmds.download()
+cmds.wait_ready()
+print " Home Location: %s" % vehicle.home_location
 
-condition_yaw(90)
-time.sleep(5)
+vehicle.simple_goto(vehicle.home_location)
+'''
+
+point1 = LocationGlobalRelative(-35.361354, 149.165218, 0)
+vehicle.simple_goto(point1)
+
+time.sleep(3)
+
+condition_yaw(50)
+time.sleep(3)
 print "Direction is:  ", vehicle.heading
 
+condition_yaw(270)
+time.sleep(3)
 
-
-vehicle.attitude.yaw = 270
-time.sleep(5)
 print "New direction is:  ", vehicle.heading
 
 print "Current Alt is:  ", vehicle.location.global_relative_frame.alt
 time.sleep(1)
-print "Ready to Land!"
 
+print "Ready to Land!"
 vehicle.mode = VehicleMode("LAND")
 print "Landed!"
+
+time.sleep(15)
+print "Current Alt is:  ", vehicle.location.global_relative_frame.alt
 time.sleep(1)
 print "Close Vehicle Object"
 vehicle.close()
