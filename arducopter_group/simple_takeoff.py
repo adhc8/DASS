@@ -25,11 +25,6 @@ if not connection_string:
 print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
-# Reads altitude from a txt file
-altitude = open("new_altitude.txt", "r")
-alt = altitude.read()
-int_alt = int(alt)
-
 # Get Vehicle Home location - will be `None` until first set by autopilot
 while not vehicle.home_location:
     cmds = vehicle.commands
@@ -76,6 +71,11 @@ def arm_and_takeoff(aTargetAltitude):
             break
         time.sleep(1)
 
+# Reads altitude from a txt file
+altitude = open("new_altitude.txt", "r")
+alt = altitude.read()
+int_alt = int(alt)
+
 #Arm and take of to altitude of 5 meters
 arm_and_takeoff(int_alt)
 
@@ -99,19 +99,6 @@ def condition_yaw(heading, relative=False):
 #vehicle.flush()
 
 time.sleep(1)
-
-'''
-print("Set new home location to current location")
-vehicle.home_location=vehicle.location.global_frame
-print "Get new home location"
-#This reloads the home location in DroneKit and GCSs
-cmds = vehicle.commands
-cmds.download()
-cmds.wait_ready()
-print " Home Location: %s" % vehicle.home_location
-
-vehicle.simple_goto(vehicle.home_location)
-'''
 
 #point1 = LocationGlobalRelative(-35.361354, 149.165218, 0)
 #vehicle.simple_goto(point1)
