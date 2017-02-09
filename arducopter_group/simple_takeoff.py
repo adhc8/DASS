@@ -71,6 +71,9 @@ def arm_and_takeoff(aTargetAltitude):
             break
         time.sleep(1)
 
+# Sends a move command that goes nowhere so drone can Yaw after startup
+vehicle.simple_goto(vehicle.home_location)
+
 # Reads altitude from a txt file
 altitude = open("new_altitude.txt", "r")
 alt = altitude.read()
@@ -99,6 +102,7 @@ def condition_yaw(heading, relative=False):
 #vehicle.flush()
 
 time.sleep(1)
+
 
 #point1 = LocationGlobalRelative(-35.361354, 149.165218, 0)
 #vehicle.simple_goto(point1)
