@@ -1,13 +1,18 @@
+import random
+fName="Coordinate.txt"
 
-with open("Coordinate.txt") as f:
-        content = f.readlines()
-content = [x.strip('\n') for x in content]
-print(content)
-fl_content=[]
+y_coord=round(random.uniform(5,5.5),2)
 
-for item in content:
-    fl_content.append(float(item))
+print(type(y_coord))
+str_coord=str(y_coord)
+print(type(str_coord))
+print(str_coord)
 
-print(fl_content)
+with open(fName, "r+") as f:
+    f.write(str_coord)
+    str_coordIN=f.readline(1)
+
+    print(str_coordIN)
+
 
 f.close()
