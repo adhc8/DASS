@@ -71,13 +71,8 @@ def arm_and_takeoff(aTargetAltitude):
             break
         time.sleep(1)
 
-# Reads altitude from a txt file
-altitude = open("new_altitude.txt", "r")
-alt = altitude.read()
-int_alt = int(alt)
-
 #Arm and take of to altitude of 5 meters
-arm_and_takeoff(int_alt)
+arm_and_takeoff(1)
 
 def condition_yaw(heading, relative=False):
     if relative:
@@ -96,20 +91,26 @@ def condition_yaw(heading, relative=False):
         0, 0, 0)    #param 5-7 not used
 #send command to vehicle
     vehicle.send_mavlink(msg)
-#vehicle.flush()
 
 # Sends a move command that goes nowhere so drone can Yaw after startup
 vehicle.simple_goto(vehicle.home_location)
+time.sleep(1)
 
-time.sleep(3)
 
-condition_yaw(50)
-time.sleep(3)
-print "Direction is:  ", vehicle.heading
 
-condition_yaw(270)
-time.sleep(3)
+for x in range(0,37):
+    target = open("coordinates.txt", "r")
+    targ = target.read()
+    #int_target = int(targ)
+    if targ == "":
+        condition_yaw(x * 10)
+        time.sleep(1)
+        print "Direction is:  ", vehicle.heading
+    if targ != "":
+        print "Target aquired"
+        break
 
+time.sleep(1)
 print "New direction is:  ", vehicle.heading
 
 print "Current Alt is:  ", vehicle.location.global_relative_frame.alt
@@ -119,9 +120,10 @@ print "Ready to Land!"
 vehicle.mode = VehicleMode("LAND")
 print "Landed!"
 
-time.sleep(15)
-print "Current Alt is:  ", vehicle.location.global_relative_frame.alt
+time.sleep(5)
+print "New Alt is:  ", vehicle.location.global_relative_frame.alt
 time.sleep(1)
+
 print "Close Vehicle Object"
 vehicle.close()
 
