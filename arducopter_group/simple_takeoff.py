@@ -96,8 +96,6 @@ def condition_yaw(heading, relative=False):
 vehicle.simple_goto(vehicle.home_location)
 time.sleep(1)
 
-
-
 for x in range(0,37):
     target = open("coordinates.txt", "r")
     targ = target.read()
