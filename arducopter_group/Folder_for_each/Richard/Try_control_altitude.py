@@ -19,8 +19,7 @@ import math
 #Set up option parsing to get connection string
 import argparse
 parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
-parser.add_argument('--connect',
-                   help="Vehicle connection target string. If not specified, SITL automatically started and used.")
+parser.add_argument('--connect', default = '/dev/tty.usbmodem1421')
 args = parser.parse_args()
 
 connection_string = args.connect

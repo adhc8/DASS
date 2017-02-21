@@ -49,7 +49,6 @@ def arm_and_takeoff(aTargetAltitude):
         print " Waiting for vehicle to initialise..."
         time.sleep(1)
 
-
     print "Arming motors"
     # Copter should arm in GUIDED mode
     vehicle.mode = VehicleMode("GUIDED")
@@ -71,7 +70,7 @@ def arm_and_takeoff(aTargetAltitude):
             break
         time.sleep(1)
 
-#Arm and take of to altitude of 5 meters
+#Arm and take of to altitude of specified meters
 arm_and_takeoff(1)
 
 def condition_yaw(heading, relative=False):
