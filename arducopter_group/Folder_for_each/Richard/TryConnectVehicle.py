@@ -4,15 +4,18 @@ from Find_serial_ports import serial_ports
 import time
 import math
 
-# com=serial_ports()
-# com=str(com)
+com_names=serial_ports()
 
-import argparse
-parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
-parser.add_argument('--connect', default = 'COM8')
-args = parser.parse_args()
-
-connection_string = args.connect
+for name in com_names:
+    import argparse
+    try:
+        parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
+        parser.add_argument('--connect', default = 'name')
+        args = parser.parse_args()
+        connection_string = args.connect
+        break
+    except:
+        pass
 sitl = None
 
 # Connect to the Vehicle
@@ -78,7 +81,7 @@ def arm_and_takeoff(aTargetAltitude):
         print(count)
 
 #Arm and take of to altitude of 5 meters
-arm_and_takeoff(0.3)
+arm_and_takeoff(1)
 
 print("Setting LAND mode...")
 vehicle.mode = VehicleMode("LAND")
