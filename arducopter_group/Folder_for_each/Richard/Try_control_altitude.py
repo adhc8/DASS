@@ -39,9 +39,9 @@ vehicle = connect(connection_string, wait_ready=True)
 
 
 def arm_and_takeoff(aTargetAltitude):
-    """
+'''
     Arms vehicle and fly to aTargetAltitude.
-    """
+'''
 
     print "Basic pre-arm checks"
     # Don't let the user try to arm until autopilot is ready
@@ -77,7 +77,7 @@ def arm_and_takeoff(aTargetAltitude):
 arm_and_takeoff(5)
 
 def goto_position_target_local_ned(north, east, down):
-    """
+
     Send SET_POSITION_TARGET_LOCAL_NED command to request the vehicle fly to a specified
     location in the North, East, Down frame.
 
@@ -91,7 +91,7 @@ def goto_position_target_local_ned(north, east, down):
     See the above link for information on the type_mask (0=enable, 1=ignore).
     At time of writing, acceleration and yaw bits are ignored.
 
-    """
+
     msg = vehicle.message_factory.set_position_target_local_ned_encode(
         0,       # time_boot_ms (not used)
         0, 0,    # target system, target component
@@ -126,9 +126,9 @@ for x in range(0,len(fl_lines)):
 
     goto_position_target_local_ned(current_North,current_East,new_Down)
 
-"""
+
 The example is completing. LAND at current location.
-"""
+
 
 print("Setting LAND mode...")
 vehicle.mode = VehicleMode("LAND")
