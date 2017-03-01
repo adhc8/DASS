@@ -1,22 +1,24 @@
-#!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
-
-"""
-© Copyright 2015-2016, 3D Robotics.
-guided_set_speed_yaw.py: (Copter Only)
-
-This example shows how to move/direct Copter and send commands in GUIDED mode using DroneKit Python.
-
-Example documentation: http://python.dronekit.io/examples/guided-set-speed-yaw-demo.html
-"""
-
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
-from pymavlink import mavutil # Needed for command message definitions
+from pymavlink import mavutil
+from Find_serial_ports import serial_ports
+from Use_Sensors import engage_target
 import time
 import math
 
+ports = serial_ports()
 
-#Set up option parsing to get connection string
+# for port in ports:
+#     import argparse
+#     try:
+#         parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
+#         parser.add_argument('--connect', default = port)
+#         args = parser.parse_args()
+#         APM_port = port
+#     except:
+#         sensor_port = port
+
 import argparse
 parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
 parser.add_argument('--connect',
@@ -25,6 +27,7 @@ args = parser.parse_args()
 
 connection_string = args.connect
 sitl = None
+
 
 
 #Start SITL if no connection string specified
@@ -219,12 +222,18 @@ def send_global_velocity(velocity_x, velocity_y, velocity_z, duration):
 #Arm and take of to altitude of 5 meters
 arm_and_takeoff(5)
 
-print "Global Location: %s" % vehicle.location.global_relative_frame
-print "Local Location: %s" % vehicle.location.local_frame
-current_North= vehicle.location.local_frame.north
-current_East = vehicle.location.local_frame.east
-current_alt = vehicle.location.local_frame.east
+def update_pos():
+    print "Global Location: %s" % vehicle.location.global_relative_frame
+    print "Local Location: %s" % vehicle.location.local_frame
+    current_North= vehicle.location.local_frame.north
+    current_East = vehicle.location.local_frame.east
+    current_alt = vehicle.location.local_frame.east
 
+while count < 10:
+
+
+    send_ned_velocity(1, 0, 0, 2)
+    update_pos()
 
 
 print("Setting LAND mode...")
