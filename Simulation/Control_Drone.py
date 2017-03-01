@@ -231,8 +231,8 @@ def update_pos():
 
 while count < 10:
 
-
-    send_ned_velocity(1, 0, 0, 2)
+    target_info = engage_target(sensor_port)
+    send_ned_velocity(0.5, target_info.velocity_x(), target_info.velocity_z(), 1)
     update_pos()
 
 

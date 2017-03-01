@@ -14,14 +14,7 @@ f = str.split(str_test,',')
 # print(len(str_test))
 # print(f)
 # print(len(f))
-g=[]
-for val in f:
-    print(val)
-    try:
-        g.append(float(val))
-    except:
-        g.append(0)
-    print(g)
-h = 2+g[2]/5
-
+g = math.pi
+h = [g-math.pi/16, g + math.pi/16]
 print(h)
+print(type(h))
